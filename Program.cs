@@ -18,20 +18,19 @@ namespace Bussen
 	ut en text i Run()-metoden.
 	 */
 
-	class Controls
+	class SafeInput
 	{
-		static public string allowedStrings(string text)
+		static public string Strings(string text)
 		{
 			while (text == "" || text == null)
 			{
-				Console.Clear();
-				System.Console.WriteLine("Empty values not allowed! Try again:");
+				System.Console.WriteLine("Empty values not allowed, try again:");
 				text = Console.ReadLine();
 			}
 			return text;
 		}
 
-		static public int allowedInts(string strNumber)
+		static public int Integers(string strNumber)
 		{
 			if (int.TryParse(strNumber, out int okNumber) == true)
 			{
@@ -39,18 +38,23 @@ namespace Bussen
 			}
 			else
 			{
-				System.Console.WriteLine("Faulty input, try again!: ");
-				return allowedInts(Console.ReadLine());
+				System.Console.WriteLine("Could not parse, try again!: ");
+				return Integers(Console.ReadLine());
 			}
 		}
 	}
 
-	class Passagerare
+	class Seat
 	{
-		int ålder;
-		string kön;
+	
+	}
 
-		public Passagerare (int a, string g)
+	class Passenger
+	{
+		int ålder {get; set;}
+		string kön {get; set;}
+
+		public Passenger(int a, string g)
 		{
 			ålder = a;
 			kön = g;
@@ -59,8 +63,10 @@ namespace Bussen
 
 	class Buss
 	{
-		object[] allaPassagerare = new object[25];
-		int[] allSeats = new int[25];
+		object[] allPassengers = new object[25];
+
+			// Initiera lista med platser
+		bool[] seatFree = new bool[25];
 
 		public void Run()
 		{
@@ -74,13 +80,11 @@ namespace Bussen
 			// Initialiasera menyväljaren
 			int menuSelect = 0;
 
-			// Initiera lista med platser
-
 			// Initiera menyalternativ
 			string[] menuOptions = new string[] 
 			{
-				"A1",
-				"A2",
+				"Addera passagerare",
+				"Lista alla passagerare",
 				"A3",
 				"A4",
 				"A5",
@@ -93,23 +97,20 @@ namespace Bussen
 			
 
 			// meny
-
-
-
 			while (true)
 			{
 				// Dölj markören
 				Console.CursorVisible = false;
 
-				// Rensa skärmen
+				// Rensa skärmen och skriv ut menyn
 				Console.Clear();
-
-				// Skriv ut menyn
+				System.Console.WriteLine("Buss OS - Huvudmeny");
+				System.Console.WriteLine("-----------------------------");
 				for (int i = 0; i < menuOptions.Length; i++)
 				{
 					if (menuSelect == i)
 					{
-						System.Console.WriteLine(menuOptions[i] + " <--");
+						System.Console.WriteLine("[" + menuOptions[i] + "]");
 					}
 					else
 					{
@@ -169,21 +170,43 @@ namespace Bussen
 			Console.CursorVisible = true;
 
 			Console.WriteLine("Ange ålder: ");
-			int age = Convert.ToInt32((Console.ReadLine()));
-			Console.WriteLine("Ange kön: ");
-			string gender = Controls.allowedStrings(Console.ReadLine());
+			int age = SafeInput.Integers(Console.ReadLine());
 			
-			allaPassagerare.Append(new Passagerare(age,gender));
+			Console.WriteLine("Ange kön: ");
+			string gender = SafeInput.Strings(Console.ReadLine());
+			
+			for (int i = 0; i < seatFree.Length; i++)
+			{
+				if (seatFree[i] != false)
+				{
+					// Lägg till en ny passagerare
+					allPassengers[i] = new Passenger(age, gender);
+
+					// Markera platsen som upptagen
+					seatFree[i] = false;
+					break;
+				}		
+			}
+			System.Console.WriteLine("No free seats available!");
+			
 		}
 		
 		public void print_buss()
 		{
 			//Skriv ut alla värden ur vektorn. Alltså - skriv ut alla passagerare
 
-			for (int i = 0; i < allaPassagerare.Length; i++)
+			for (int i = 0; i < seatFree.Length; i++)
 			{
-				System.Console.WriteLine(allaPassagerare[i]);
+				System.Console.WriteLine(allPassengers[i]);
 			}
+
+
+			/*
+			foreach (Passenger passenger in allPassengers)
+			{
+				System.Console.WriteLine("kön: " + passenger.kön + "ålder: " + passenger.ålder);
+			}
+			*/
 		}
 		/*
 		public int calc_total_age()
