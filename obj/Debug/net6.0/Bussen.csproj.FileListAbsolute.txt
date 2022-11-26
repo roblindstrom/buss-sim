@@ -1,0 +1,15 @@
+/home/diosmio/Documents/CODE/Bussen/bin/Debug/net6.0/Bussen
+/home/diosmio/Documents/CODE/Bussen/bin/Debug/net6.0/Bussen.deps.json
+/home/diosmio/Documents/CODE/Bussen/bin/Debug/net6.0/Bussen.runtimeconfig.json
+/home/diosmio/Documents/CODE/Bussen/bin/Debug/net6.0/Bussen.dll
+/home/diosmio/Documents/CODE/Bussen/bin/Debug/net6.0/ref/Bussen.dll
+/home/diosmio/Documents/CODE/Bussen/bin/Debug/net6.0/Bussen.pdb
+/home/diosmio/Documents/CODE/Bussen/obj/Debug/net6.0/Bussen.csproj.AssemblyReference.cache
+/home/diosmio/Documents/CODE/Bussen/obj/Debug/net6.0/Bussen.GeneratedMSBuildEditorConfig.editorconfig
+/home/diosmio/Documents/CODE/Bussen/obj/Debug/net6.0/Bussen.AssemblyInfoInputs.cache
+/home/diosmio/Documents/CODE/Bussen/obj/Debug/net6.0/Bussen.AssemblyInfo.cs
+/home/diosmio/Documents/CODE/Bussen/obj/Debug/net6.0/Bussen.csproj.CoreCompileInputs.cache
+/home/diosmio/Documents/CODE/Bussen/obj/Debug/net6.0/Bussen.dll
+/home/diosmio/Documents/CODE/Bussen/obj/Debug/net6.0/ref/Bussen.dll
+/home/diosmio/Documents/CODE/Bussen/obj/Debug/net6.0/Bussen.pdb
+/home/diosmio/Documents/CODE/Bussen/obj/Debug/net6.0/Bussen.genruntimeconfig.cache
