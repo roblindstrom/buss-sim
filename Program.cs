@@ -22,12 +22,15 @@ namespace Bussen
 	{
 		static public string Strings(string text)
 		{
-			while (text == "" || text == null)
+			if (String.IsNullOrWhiteSpace(text) == false)
 			{
-				System.Console.WriteLine("Empty values not allowed, try again:");
-				text = Console.ReadLine();
+				return text;
 			}
-			return text;
+			else
+			{
+				System.Console.WriteLine("Could not read value, try again!: ");
+				return Strings(Console.ReadLine());
+			}
 		}
 
 		static public int Integers(string strNumber)
@@ -44,29 +47,35 @@ namespace Bussen
 		}
 	}
 
-	class Seat
-	{
-	
-	}
-
 	class Passenger
 	{
-		int ålder {get; set;}
-		string kön {get; set;}
+		public int age {get;}
+		public string gender {get;}
 
-		public Passenger(int a, string g)
+		public Passenger(int ag, string gen)
 		{
-			ålder = a;
-			kön = g;
+			age = ag;
+			gender = gen;
+		}
+	}
+
+	class Seat
+	{
+		public bool occupied {get; set;}
+
+		public Passenger passenger {get; set;}
+
+		public Seat(bool occ, int age, string gender)
+		{
+			occupied = occ;
+			passenger = new Passenger(age, gender);
+
 		}
 	}
 
 	class Buss
 	{
-		object[] allPassengers = new object[25];
-
-			// Initiera lista med platser
-		bool[] seatFree = new bool[25];
+		Seat[] allSeats = new Seat[25];
 
 		public void Run()
 		{
@@ -77,6 +86,12 @@ namespace Bussen
 			//Börja nu med att köra koden för att se att det fungerar innan ni sätter igång med menyn.
 			//Bygg sedan steg-för-steg och testkör koden.
 
+			//Fyll vektor med seat-objekt
+			for (int i = 0; i < allSeats.Length; i++)
+			{
+				allSeats[i] = new Seat(false, 0, "n/a");
+			}
+
 			// Initialiasera menyväljaren
 			int menuSelect = 0;
 
@@ -85,16 +100,15 @@ namespace Bussen
 			{
 				"Addera passagerare",
 				"Lista alla passagerare",
-				"A3",
-				"A4",
-				"A5",
-				"A6"
+				"Summera åldern för alla passagerare",
+				"Beräkna passaregarnas snittålder",
+				"Skriv ut passagerare med högst ålder",
+				"Hitta passagerare i angivet åldersspann"
 			};
 			
 			Console.WriteLine("Welcome to the awesome Buss-simulator");
 			System.Console.WriteLine("Press any key to continue.");
-			Console.ReadKey();
-			
+			Console.Read();
 
 			// meny
 			while (true)
@@ -117,6 +131,8 @@ namespace Bussen
 						System.Console.WriteLine(menuOptions[i]);
 					}
 				}
+				System.Console.WriteLine("-----------------------------");
+				System.Console.WriteLine("Använd 🠕, 🠗 och Enter");
 
 				// Läs tangent
 				var keyPressed = Console.ReadKey();
@@ -147,26 +163,27 @@ namespace Bussen
 							print_buss();
 							break;
 						case 2:
-							System.Console.WriteLine("case 2");
+							calc_total_age();
 							break;
 						case 3:
+							calc_average_age();
 							break;
 						case 4:
+							max_age();
 							break;
 						case 5:
+							find_age();
 							break;
 					}
 					Console.Read();
 				}
 			}
 		}
-
-		//Metoder för betyget E
 		
 		public void add_passenger()
 		{
 			//Lägg till passagerare. Här skriver man då in ålder men eventuell annan information.
-			//Om bussen är full kan inte någon passagerare stiga på
+			//Om bussen är full kan inte någon passagerare stiga på.
 			Console.CursorVisible = true;
 
 			Console.WriteLine("Ange ålder: ");
@@ -175,53 +192,55 @@ namespace Bussen
 			Console.WriteLine("Ange kön: ");
 			string gender = SafeInput.Strings(Console.ReadLine());
 			
-			for (int i = 0; i < seatFree.Length; i++)
+			for (int i = 0; i < allSeats.Length; i++)
 			{
-				if (seatFree[i] != false)
+				if (allSeats[i].occupied == false)
 				{
 					// Lägg till en ny passagerare
-					allPassengers[i] = new Passenger(age, gender);
+					allSeats[i].passenger = new Passenger(age, gender);
 
 					// Markera platsen som upptagen
-					seatFree[i] = false;
+					allSeats[i].occupied = true;
+
+					//Informera om vilken plats 
+					System.Console.WriteLine("Passagerare fick platsen: " + i);
 					break;
-				}		
+				}
+
+				// if no free seats, print message
 			}
-			System.Console.WriteLine("No free seats available!");
-			
 		}
 		
 		public void print_buss()
 		{
 			//Skriv ut alla värden ur vektorn. Alltså - skriv ut alla passagerare
-
-			for (int i = 0; i < seatFree.Length; i++)
+			System.Console.WriteLine("Lista alla passagerare");
+			for (int i = 0; i < allSeats.Length; i++)
 			{
-				System.Console.WriteLine(allPassengers[i]);
+				System.Console.WriteLine("Plats: " + i + "Upptagen: " + allSeats[i].occupied + " Ålder: " + allSeats[i].passenger.age + " Kön: " + allSeats[i].passenger.gender);
 			}
-
-
-			/*
-			foreach (Passenger passenger in allPassengers)
-			{
-				System.Console.WriteLine("kön: " + passenger.kön + "ålder: " + passenger.ålder);
-			}
-			*/
 		}
-		/*
+		
 		public int calc_total_age()
 		{
 			//Beräkna den totala åldern. 
 			//För att koden ska fungera att köra så måste denna metod justeras, alternativt att man temporärt sätter metoden med void
+			int total = 0;
+			for (int i = 0; i < allSeats.Length; i++)
+			{
+				total += allSeats[i].passenger.age;
+			}
+			return total;
 		}
 		
-		//Metoder för betyget C
-		/*
 		public double calc_average_age()
 		{
 			//Betyg C
 			//Beräkna den genomsnittliga åldern. Kanske kan man tänka sig att denna metod ska returnera något annat värde än heltal?
 			//För att koden ska fungera att köra så måste denna metod justeras, alternativt att man temporärt sätter metoden med void
+
+			return Convert.ToDouble(calc_total_age() / allSeats.Length);
+
 		}
 		
 		public int max_age()
@@ -229,6 +248,17 @@ namespace Bussen
 			//Betyg C
 			//ta fram den passagerare med högst ålder. Detta ska ske med egen kod och är rätt klurigt.
 			//För att koden ska fungera att köra så måste denna metod justeras, alternativt att man temporärt sätter metoden med void
+			int maxAge = 0;
+			int personIndex = 0;
+			for (int i = 0; i < allSeats.Length; i++)
+			{
+				if (allSeats[i].passenger.age > maxAge)
+				{
+					maxAge = allSeats[i].passenger.age;
+					personIndex = i;
+				}
+			}
+			return personIndex;
 		}
 		
 		public void find_age()
@@ -238,18 +268,31 @@ namespace Bussen
 			//Betyg C
 			//Beskrivs i läroboken på sidan 147 och framåt (kodexempel på sidan 149)
 
+			int lowAge = SafeInput.Integers(Console.ReadLine());
+			int highAge = SafeInput.Integers(Console.ReadLine());
+
+			for (int i = 0; i < allSeats.Length; i++)
+			{
+				if (allSeats[i].passenger.age > lowAge && allSeats[i].passenger.age < highAge)
+				{
+					System.Console.WriteLine("Plats: " + i + "Upptagen: " + allSeats[i].occupied + " Ålder: " + allSeats[i].passenger.age + " Kön: " + allSeats[i].passenger.gender);
+				}
+			}
+
 		}
-		
+	
 		public void sort_buss()
 		{
 			//Sortera bussen efter ålder. Tänk på att du inte kan ha tomma positioner "mitt i" vektorn.
 			//Beskrivs i läroboken på sidan 147 och framåt (kodexempel på sidan 159)
 			//Man ska kunna sortera vektorn med bubble sort
+
+			Array.Sort(allSeats.OrderBy);
 		}
 		
+		/*
 		//Metoder för betyget A
 		//NOTERA! För betyget A ska du inte jobba med heltal i vektorn utan objekt av klassen passagerare (som du skapar)
-		
 		
 		public void print_sex()
 		{
