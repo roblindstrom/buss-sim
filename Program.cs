@@ -14,6 +14,7 @@ using System;
 
 Todo:
 - passagerare getup-metod + sitdown (static metod för att instansiera en passagerare?)
+- passagerare pokereaktion-metod baserat på ålder och kön
 - sortera passagerare
 - poke-metod
 
