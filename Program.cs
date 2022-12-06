@@ -346,7 +346,7 @@ namespace Bussen
 			print_buss();
 
 			System.Console.WriteLine("");
-			System.Console.WriteLine("Peta på en passagerare, ange nummer mellan 1 - " + allSeats.Length +);
+			System.Console.WriteLine("Peta på en passagerare, ange nummer mellan 1 - " + allSeats.Length);
 			int nr = SafeInput.Integers(Console.ReadLine());
 			// allSeats[(nr - 1)].passenger.
 
