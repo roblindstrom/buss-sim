@@ -10,6 +10,15 @@ using System;
 //Nedan är namnet på "namespace" - alltså projektet. 
 //SKapa ett nytt konsollprojekt med namnet "Bussen" så kan ni kopiera över all koden rakt av från denna fil
 
+/*
+
+Todo:
+- passagerare getup-metod + sitdown (static metod för att instansiera en passagerare?)
+- sortera passagerare
+- poke-metod
+
+*/
+
 namespace Bussen
 {
 	/*Börja längst ner i dokumentet och klassen "Program".
@@ -103,7 +112,9 @@ namespace Bussen
 				"Summera åldern för alla passagerare",
 				"Beräkna passaregarnas snittålder",
 				"Skriv ut passagerare med högst ålder",
-				"Hitta passagerare i angivet åldersspann"
+				"Hitta passagerare i angivet åldersspann",
+				"Sortera bussen",
+				"Skriv ut passagerarnas kön"
 			};
 			
 			Console.WriteLine("Welcome to the awesome Buss-simulator");
@@ -116,7 +127,7 @@ namespace Bussen
 				// Dölj markören
 				Console.CursorVisible = false;
 
-				// Rensa skärmen och skriv ut menyn
+				// Rensa skärmen och skriv ut menyn med marketat alternativ
 				Console.Clear();
 				System.Console.WriteLine("Buss OS - Huvudmeny");
 				System.Console.WriteLine("-----------------------------");
@@ -174,7 +185,14 @@ namespace Bussen
 						case 5:
 							find_age();
 							break;
+						case 6:
+							sort_buss();
+							break;
+						case 7:
+							print_sex();
+							break;
 					}
+					System.Console.WriteLine("menyval klart, enter för att gå tillbaka!");
 					Console.Read();
 				}
 			}
@@ -203,7 +221,7 @@ namespace Bussen
 					allSeats[i].occupied = true;
 
 					//Informera om vilken plats 
-					System.Console.WriteLine("Passagerare fick platsen: " + i);
+					System.Console.WriteLine("Passagerare fick platsen: " + (i + 1));
 					break;
 				}
 
@@ -217,7 +235,7 @@ namespace Bussen
 			System.Console.WriteLine("Lista alla passagerare");
 			for (int i = 0; i < allSeats.Length; i++)
 			{
-				System.Console.WriteLine("Plats: " + i + "Upptagen: " + allSeats[i].occupied + " Ålder: " + allSeats[i].passenger.age + " Kön: " + allSeats[i].passenger.gender);
+				System.Console.WriteLine("Plats: " + (i + 1) + "Upptagen: " + allSeats[i].occupied + " Ålder: " + allSeats[i].passenger.age + " Kön: " + allSeats[i].passenger.gender);
 			}
 		}
 		
@@ -268,17 +286,23 @@ namespace Bussen
 			//Betyg C
 			//Beskrivs i läroboken på sidan 147 och framåt (kodexempel på sidan 149)
 
+			System.Console.WriteLine("Ange min ålder: ");
 			int lowAge = SafeInput.Integers(Console.ReadLine());
+
+			System.Console.WriteLine("Ange max ålder: ");
 			int highAge = SafeInput.Integers(Console.ReadLine());
 
 			for (int i = 0; i < allSeats.Length; i++)
 			{
-				if (allSeats[i].passenger.age > lowAge && allSeats[i].passenger.age < highAge)
+				// Skriv bara ut om det finns en passagerare på platsen
+				if (allSeats[i].occupied == true)
 				{
-					System.Console.WriteLine("Plats: " + i + "Upptagen: " + allSeats[i].occupied + " Ålder: " + allSeats[i].passenger.age + " Kön: " + allSeats[i].passenger.gender);
+					if (allSeats[i].passenger.age > lowAge && allSeats[i].passenger.age < highAge)
+					{
+						System.Console.WriteLine("Plats: " + i + "Upptagen: " + allSeats[i].occupied + " Ålder: " + allSeats[i].passenger.age + " Kön: " + allSeats[i].passenger.gender);
+					}
 				}
 			}
-
 		}
 	
 		public void sort_buss()
@@ -287,10 +311,10 @@ namespace Bussen
 			//Beskrivs i läroboken på sidan 147 och framåt (kodexempel på sidan 159)
 			//Man ska kunna sortera vektorn med bubble sort
 
-			Array.Sort(allSeats.OrderBy);
+			
 		}
 		
-		/*
+		
 		//Metoder för betyget A
 		//NOTERA! För betyget A ska du inte jobba med heltal i vektorn utan objekt av klassen passagerare (som du skapar)
 		
@@ -299,6 +323,16 @@ namespace Bussen
 			//Betyg A
 			//Denna metod är nödvändigtvis inte svårare än andra metoder men kräver att man skapar en klass för passagerare.
 			//Skriv ut vilka positioner som har manliga respektive kvinnliga passagerare.
+
+			for (int i = 0; i < allSeats.Length; i++)
+			{
+				// Skriv bara ut om det finns en passagerare på platsen
+				if (allSeats[i].occupied == true)
+				{
+					System.Console.WriteLine("Plats: " + (i + 1) + " Kön: " + allSeats[i].passenger.gender);
+				}
+			}
+
 		}	
 		public void poke()
 		{
@@ -307,6 +341,14 @@ namespace Bussen
 			//Denna metod är valfri om man vill skoja till det lite, men är också bra ur lärosynpunkt.
 			//Denna metod ska anropa en passagerares metod för hur de reagerar om man petar på dom (eng: poke)
 			//Som ni kan läsa i projektbeskrivningen så får detta beteende baseras på ålder och kön.
+
+			print_buss();
+
+			System.Console.WriteLine("");
+			System.Console.WriteLine("Peta på en passagerare, ange nummer mellan 1 - " + allSeats.Length +);
+			int nr = SafeInput.Integers(Console.ReadLine());
+			// allSeats[(nr - 1)].passenger.
+
 		}	
 		
 		public void getting_off()
@@ -318,9 +360,9 @@ namespace Bussen
 			//Den mest lämpliga lösningen (men kanske inte mest realistisk) är att passagerare bakom den plats..
 			//.. som tillhörde den som lämnade bussen, får flytta fram en plats.
 			//Då finns aldrig någon tom plats mellan passagerare.
-		}	
 
-		*/
+
+		}	
 	}
 	
 	class Program
