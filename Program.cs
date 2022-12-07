@@ -1,4 +1,4 @@
-﻿/*Hjälpkod för att komma igång
+/*Hjälpkod för att komma igång
  * Notera att båda klasserna är i samma fil för att det ska underlätta.
  * Om programmet blir större bör man ha klasserna i separata filer såsom jag går genom i filmen
  * Då kan det vara läge att ställa in startvärden som jag gjort.
@@ -7,16 +7,14 @@
  * För högre betyg krävs mer självständigt arbete
  */
 using System;
+using System.Reflection;
 //Nedan är namnet på "namespace" - alltså projektet. 
 //SKapa ett nytt konsollprojekt med namnet "Bussen" så kan ni kopiera över all koden rakt av från denna fil
 
 /*
 
 Todo:
-- passagerare getup-metod + sitdown (static metod för att instansiera en passagerare?)
-- passagerare pokereaktion-metod baserat på ålder och kön
-- sortera passagerare
-- poke-metod
+- check null på sortlist eller occupied.
 
 */
 
@@ -27,6 +25,8 @@ namespace Bussen
 	I beskrivningen av projektet påpekas vikten av att koda stegvis. I detta fall kan det handla om att ni bara ska skriva
 	ut en text i Run()-metoden.
 	 */
+
+
 
 	class SafeInput
 	{
@@ -57,38 +57,117 @@ namespace Bussen
 		}
 	}
 
-	class Passenger
+	public static class Reaction
 	{
-		public int age {get;}
-		public string gender {get;}
-
-		public Passenger(int ag, string gen)
+		public static List<string> MaleReactions = new List<string>
 		{
-			age = ag;
-			gender = gen;
+			"Aaaaaj",// 40-100år
+			"Vad kan jag hjälpa dig med?", // 18-40år
+			"Försvinn!!" // 1-18år
+		};
+		public static List<string> FemaleReactions = new List<string>
+		{
+			"",
+			"",
+			""
+		};
+
+		public static void React(Passenger passenger)
+		{
+			var listOfReactions = new List<string>();
+			if (passenger.gender == "Male")
+			{
+				listOfReactions = MaleReactions;
+
+            }
+            if (passenger.gender == "Female")
+            {
+                listOfReactions = FemaleReactions;
+            }
+
+            if (passenger.age <= 18)
+            {
+                Console.WriteLine(listOfReactions[0]);
+            }
+			if (passenger.age > 18 && passenger.age <= 40)
+			{
+				Console.WriteLine(listOfReactions[1]);
+			}
+			if (passenger.age > 40)
+			{
+				Console.WriteLine(listOfReactions[2]);
+			}
+        }
+	}
+
+	public class Passenger
+	{
+
+		public int age;
+		public string gender;
+
+		public Passenger(int age, string gender)
+		{
+			this.age = age;
+			this.gender = SetGender(gender);
+        }
+
+
+        public string SetGender(string input)
+		{
+			while (true)
+			{
+                if (input == "male")
+                {
+                    return input;
+                }
+                else if (input == "female")
+                {
+                    return input;
+                }
+                else
+				{
+                    Console.WriteLine("Faulty input, try again!");
+					input = SafeInput.Strings(Console.ReadLine());
+                }
+            }
 		}
 	}
 
-	class Seat
+	public class Seat
 	{
-		public bool occupied {get; set;}
+		public bool Occupied { get; private set; }
 
-		public Passenger passenger {get; set;}
+		public Passenger Passenger { get; private set; }
 
-		public Seat(bool occ, int age, string gender)
+		public void SitDown(Passenger newPassanger)
 		{
-			occupied = occ;
-			passenger = new Passenger(age, gender);
-
+			Occupied = true;
+			Passenger = newPassanger;
 		}
+		public void GetUp()
+		{
+			Occupied = false;
+			Passenger = null;
+		}
+		
+		//public Seat(bool occ, Passenger passenger)
+		//{
+		//	Occupied = occ;
+		//	Passenger = passenger;
+		//
+		//}
 	}
 
 	class Buss
 	{
-		Seat[] allSeats = new Seat[25];
+		
 
+		Seat[] allSeats = new Seat[25];
+		
 		public void Run()
 		{
+			
 			//Här ska menyn ligga för att göra saker
 			//Jag rekommenderar switch och case här
 			//I filmen nummer 1 för slutprojektet så skapar jag en meny på detta sätt.
@@ -99,8 +178,11 @@ namespace Bussen
 			//Fyll vektor med seat-objekt
 			for (int i = 0; i < allSeats.Length; i++)
 			{
-				allSeats[i] = new Seat(false, 0, "n/a");
+				allSeats[i] = new Seat();
 			}
+
+			// test
+			OpenDoors();
 
 			// Initialiasera menyväljaren
 			int menuSelect = 0;
@@ -120,7 +202,7 @@ namespace Bussen
 			
 			Console.WriteLine("Welcome to the awesome Buss-simulator");
 			System.Console.WriteLine("Press any key to continue.");
-			Console.Read();
+			Console.ReadKey();
 
 			// meny
 			while (true)
@@ -198,7 +280,23 @@ namespace Bussen
 				}
 			}
 		}
-		
+
+		public void OpenDoors()
+		{
+
+            Random rnd = new Random();
+            for (int i = 0; i < allSeats.Length; i++)
+			{
+                int rand = rnd.Next(1, 3);
+                int age = rnd.Next(1, 100);
+                string gender = "male";
+				if (rand == 1)
+                {
+                    allSeats[i].SitDown(new Passenger(age, gender));
+                }
+			}
+		}
+
 		public void add_passenger()
 		{
 			//Lägg till passagerare. Här skriver man då in ålder men eventuell annan information.
@@ -213,21 +311,30 @@ namespace Bussen
 			
 			for (int i = 0; i < allSeats.Length; i++)
 			{
-				if (allSeats[i].occupied == false)
+				if (allSeats[i].Occupied == false)
 				{
 					// Lägg till en ny passagerare
-					allSeats[i].passenger = new Passenger(age, gender);
-
-					// Markera platsen som upptagen
-					allSeats[i].occupied = true;
+					allSeats[i].SitDown(new Passenger(age, gender));
 
 					//Informera om vilken plats 
 					System.Console.WriteLine("Passagerare fick platsen: " + (i + 1));
 					break;
 				}
-
-				// if no free seats, print message
-			}
+                
+                bool allOccupied = true;
+				foreach (var seat in allSeats)
+				{
+					if (seat.Occupied == false)
+					{
+						allOccupied = false;
+                    }
+				}
+				if (allOccupied)
+				{
+					Console.WriteLine("No seats available!");
+				}
+                // if no free seats, print message
+            }
 		}
 		
 		public void print_buss()
@@ -236,7 +343,7 @@ namespace Bussen
 			System.Console.WriteLine("Lista alla passagerare");
 			for (int i = 0; i < allSeats.Length; i++)
 			{
-				System.Console.WriteLine("Plats: " + (i + 1) + "Upptagen: " + allSeats[i].occupied + " Ålder: " + allSeats[i].passenger.age + " Kön: " + allSeats[i].passenger.gender);
+				System.Console.WriteLine("Plats: " + (i + 1) + "Upptagen: " + allSeats[i].Occupied + " Ålder: " + allSeats[i].Passenger.age + " Kön: " + allSeats[i].Passenger.gender);
 			}
 		}
 		
@@ -247,7 +354,7 @@ namespace Bussen
 			int total = 0;
 			for (int i = 0; i < allSeats.Length; i++)
 			{
-				total += allSeats[i].passenger.age;
+				total += allSeats[i].Passenger.age;
 			}
 			return total;
 		}
@@ -262,7 +369,7 @@ namespace Bussen
 
 		}
 		
-		public int max_age()
+		public void max_age()
 		{
 			//Betyg C
 			//ta fram den passagerare med högst ålder. Detta ska ske med egen kod och är rätt klurigt.
@@ -271,13 +378,13 @@ namespace Bussen
 			int personIndex = 0;
 			for (int i = 0; i < allSeats.Length; i++)
 			{
-				if (allSeats[i].passenger.age > maxAge)
+				if (allSeats[i].Passenger.age > maxAge)
 				{
-					maxAge = allSeats[i].passenger.age;
+					maxAge = allSeats[i].Passenger.age;
 					personIndex = i;
 				}
 			}
-			return personIndex;
+			Console.WriteLine("Äldsta passageraren är passagerare nr: " + (personIndex + 1) + " Ålder: " + allSeats[personIndex].Passenger.age + " Kön: " + allSeats[personIndex].Passenger.gender);
 		}
 		
 		public void find_age()
@@ -296,11 +403,11 @@ namespace Bussen
 			for (int i = 0; i < allSeats.Length; i++)
 			{
 				// Skriv bara ut om det finns en passagerare på platsen
-				if (allSeats[i].occupied == true)
+				if (allSeats[i].Occupied == true)
 				{
-					if (allSeats[i].passenger.age > lowAge && allSeats[i].passenger.age < highAge)
+					if (allSeats[i].Passenger.age > lowAge && allSeats[i].Passenger.age < highAge)
 					{
-						System.Console.WriteLine("Plats: " + i + "Upptagen: " + allSeats[i].occupied + " Ålder: " + allSeats[i].passenger.age + " Kön: " + allSeats[i].passenger.gender);
+						System.Console.WriteLine("Plats: " + i + "Upptagen: " + allSeats[i].Occupied + " Ålder: " + allSeats[i].Passenger.age + " Kön: " + allSeats[i].Passenger.gender);
 					}
 				}
 			}
@@ -311,9 +418,29 @@ namespace Bussen
 			//Sortera bussen efter ålder. Tänk på att du inte kan ha tomma positioner "mitt i" vektorn.
 			//Beskrivs i läroboken på sidan 147 och framåt (kodexempel på sidan 159)
 			//Man ska kunna sortera vektorn med bubble sort
+			Passenger tempPassanger = null;
 
-			
-		}
+            for (int write = 0; write < allSeats.Length; write++)
+            {
+                for (int sort = 0; sort < allSeats.Length - 1; sort++)
+                {
+
+					//nullceck
+
+                    if (allSeats[sort].Passenger.age > allSeats[sort + 1].Passenger.age)
+                    {
+                        tempPassanger = allSeats[sort + 1].Passenger;
+                        allSeats[sort + 1].SitDown(allSeats[sort].Passenger);
+                        allSeats[sort].SitDown(tempPassanger);
+                    }
+                }
+            }
+
+			print_buss();
+			Console.WriteLine("n/Bussen har sorterats!");
+            Console.ReadKey();
+
+        }
 		
 		
 		//Metoder för betyget A
@@ -328,9 +455,9 @@ namespace Bussen
 			for (int i = 0; i < allSeats.Length; i++)
 			{
 				// Skriv bara ut om det finns en passagerare på platsen
-				if (allSeats[i].occupied == true)
+				if (allSeats[i].Occupied == true)
 				{
-					System.Console.WriteLine("Plats: " + (i + 1) + " Kön: " + allSeats[i].passenger.gender);
+					System.Console.WriteLine("Plats: " + (i + 1) + " Kön: " + allSeats[i].Passenger.gender);
 				}
 			}
 
@@ -348,7 +475,14 @@ namespace Bussen
 			System.Console.WriteLine("");
 			System.Console.WriteLine("Peta på en passagerare, ange nummer mellan 1 - " + allSeats.Length);
 			int nr = SafeInput.Integers(Console.ReadLine());
-			// allSeats[(nr - 1)].passenger.
+			if (allSeats[nr].Occupied == true)
+			{
+				Reaction.React(allSeats[nr].Passenger);
+			}
+			else
+			{
+				Console.WriteLine("Ingen person i sätet.");
+			}
 
 		}	
 		
@@ -362,6 +496,7 @@ namespace Bussen
 			//.. som tillhörde den som lämnade bussen, får flytta fram en plats.
 			//Då finns aldrig någon tom plats mellan passagerare.
 
+			
 
 		}	
 	}
